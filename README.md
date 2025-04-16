@@ -14,5 +14,5 @@ Optional (For Android phone emulator):
 
 1. Clone this repository and navigate to the controller-app folder
 2. You should have already installed the VSCode extension, if not go to this link: https://docs.flutter.dev/get-started/install/windows/mobile.
-3. Run '''flutter pub get''' to install all dependencies
-4. To run, type '''flutter run'''. This will prompt you to chose a device then will display the application (you may need to run '''flutter clean''' beforehand)
+3. Run ```flutter pub get``` to install all dependencies
+4. To run, type ```flutter run```. This will prompt you to chose a device then will display the application (you may need to run ```flutter clean``` beforehand)
