@@ -110,13 +110,13 @@ class _ControllerPageState extends State<ControllerPage> {
 
     rudderTopic = Topic(
       ros: ros,
-      name: '/sailbot/webserver_rudder',
+      name: '/sailbot/controller_app_rudder',
       type: 'std_msgs/Int32',
     );
 
     sailTopic = Topic(
       ros: ros,
-      name: '/sailbot/webserver_sail',
+      name: '/sailbot/controller_app_sail',
       type: 'std_msgs/Int32',
     );
   }
