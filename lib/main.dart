@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:roslibdart/roslibdart.dart';
+
 import 'widgets/joystick.dart'; 
 import 'painters/boat_painter.dart'; 
 import 'themes/marine_theme.dart';
@@ -36,7 +39,7 @@ class ServerInputPage extends StatefulWidget {
 }
 
 class _ServerInputPageState extends State<ServerInputPage> {
-  final _controller = TextEditingController(text: 'ws://192.168.1.100:9090');
+  final _controller = TextEditingController(text: 'ws://localhost:9090');
 
   void _connect() {
     final uri = _controller.text.trim();
@@ -54,7 +57,13 @@ class _ServerInputPageState extends State<ServerInputPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+            children: [
+                        Image.asset(
+              'assets/images/justbigword.png',
+              height: 100,
+            ),
+            const SizedBox(height: 20),
+
             const Text(
               'Enter ROSBridge WebSocket URL',
               style: TextStyle(fontSize: 18),
@@ -87,33 +96,44 @@ class ControllerPage extends StatefulWidget {
 
 class _ControllerPageState extends State<ControllerPage> {
   late WebSocketChannel _channel;
+  late Ros ros;
+  late Topic rudderTopic;
+  late Topic sailTopic;
   double rudderAngle = 0.0;
   double sailAngle = 45.0;
 
   @override
   void initState() {
     super.initState();
-    _channel = WebSocketChannel.connect(Uri.parse(widget.serverUri));
+    ros = Ros(url: widget.serverUri);
+    ros.connect();
+
+    rudderTopic = Topic(
+      ros: ros,
+      name: 'webserver_rudder',
+      type: 'std_msgs/Float64',
+    );
+
+    sailTopic = Topic(
+      ros: ros,
+      name: 'webserver_sail',
+      type: 'std_msgs/Float64',
+    );
   }
 
-  void publish(String topic, double angle) {
-    final message = {
-      "op": "publish",
-      "topic": topic,
-      "msg": {"data": angle},
-    };
-    _channel.sink.add(jsonEncode(message));
+  void publish(Topic topic, double angle) {
+    topic.publish({'data': angle});
   }
 
   void handleJoystickUpdate(Offset offset) {
     double angle = (offset.dx * 25).clamp(-25.0, 25.0);
     setState(() => rudderAngle = angle);
-    publish("/rudder_angle", angle);
+    publish(rudderTopic, angle);
   }
 
   void handleSailSlider(double value) {
     setState(() => sailAngle = value);
-    publish("/sail_angle", value);
+    publish(sailTopic, value);
   }
 
   @override
