@@ -110,30 +110,30 @@ class _ControllerPageState extends State<ControllerPage> {
 
     rudderTopic = Topic(
       ros: ros,
-      name: 'webserver_rudder',
-      type: 'std_msgs/Float64',
+      name: '/sailbot/webserver_rudder',
+      type: 'std_msgs/Int32',
     );
 
     sailTopic = Topic(
       ros: ros,
-      name: 'webserver_sail',
-      type: 'std_msgs/Float64',
+      name: '/sailbot/webserver_sail',
+      type: 'std_msgs/Int32',
     );
   }
 
-  void publish(Topic topic, double angle) {
+  void publish(Topic topic, int angle) {
     topic.publish({'data': angle});
   }
 
   void handleJoystickUpdate(Offset offset) {
     double angle = (offset.dx * 25).clamp(-25.0, 25.0);
     setState(() => rudderAngle = angle);
-    publish(rudderTopic, angle);
+    publish(rudderTopic, angle.toInt());
   }
 
   void handleSailSlider(double value) {
     setState(() => sailAngle = value);
-    publish(sailTopic, value);
+    publish(sailTopic, value.toInt());
   }
 
   @override
