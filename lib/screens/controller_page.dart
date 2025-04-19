@@ -44,7 +44,8 @@ class _ControllerPageState extends State<ControllerPage> {
     );
     
     // Start periodic publisher
-    _publishTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    const int duration = 1; // number of seconds between publishes
+    _publishTimer = Timer.periodic(const Duration(seconds: duration), (timer) {
       _publishCurrentValues();
     });
   }
