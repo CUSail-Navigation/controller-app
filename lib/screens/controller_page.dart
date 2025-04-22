@@ -121,22 +121,28 @@ class _ControllerPageState extends State<ControllerPage> {
             value: rudderAngle, 
             min: -25,
             max: 25,
-            onChanged: handleRudderSlider, 
+            divisions: 50,
+            onChanged: (value) {
+              handleRudderSlider(value.roundToDouble());  
+            },
             onChangeEnd: (value) {
               // jump to neutral (0) after releasing the slider
               handleRudderSlider(0);
             },
           ),
-          Text('Rudder: ${rudderAngle.toStringAsFixed(1)}°'),
+          Text('Rudder: ${rudderAngle.toInt()}°'),
           const SizedBox(height: 30),
           const Text('Sail Control', style: TextStyle(fontSize: 16)),
           Slider(
             value: sailAngle,
             min: 0,
             max: 90,
-            onChanged: handleSailSlider,
+            divisions: 90,
+            onChanged: (value) {
+              handleSailSlider(value.roundToDouble());
+            }, 
           ),
-          Text('Sail: ${sailAngle.toStringAsFixed(1)}°'),
+          Text('Sail: ${sailAngle.toInt()}°'),
           const SizedBox(height: 20),
         ],
       ),
