@@ -17,13 +17,18 @@ class _ControllerPageState extends State<ControllerPage> {
   late Ros ros;
   late Topic rudderTopic;
   late Topic sailTopic;
+  late Topic windAngleTopic;
+  late Topic imuTopic;
   double rudderAngle = 0.0;
   double sailAngle = 45.0;
+  double windAngle = 0.0;
+  double heading = 0.0;
   Timer? _publishTimer;
   
   // Keep track of whether values changed since last publish
   bool _rudderChanged = false;
   bool _sailChanged = false;
+
 
   @override
   void initState() {
@@ -42,6 +47,18 @@ class _ControllerPageState extends State<ControllerPage> {
       name: '/sailbot/controller_app_sail',
       type: 'std_msgs/Int32',
     );
+
+    windAngleTopic = Topic(
+      ros: ros,
+      name: '/sailbot/wind',
+      type: 'std_msgs/Int32'
+    );
+
+    imuTopic = Topic(
+      ros: ros,
+      name: '/imu',
+      type: 'geometry_msgs/msg/Vector3'
+    );
     
     // Start periodic publisher
     const int duration = 1; // number of seconds between publishes
@@ -52,10 +69,19 @@ class _ControllerPageState extends State<ControllerPage> {
   
   @override
   void dispose() {
+    imuTopic.unsubscribe();
+    windAngleTopic.unsubscribe();
     _publishTimer?.cancel();
     ros.close();
     super.dispose();
   }
+
+  // Calculate the relative wind direction based on boat heading
+  double getRelativeWindDirection() {
+    // Convert to relative wind direction (wind angle relative to boat heading)
+    return (windAngle - heading) % 360;
+  }
+
 
   // This method publishes current values if they've changed
   void _publishCurrentValues() {
@@ -110,6 +136,8 @@ class _ControllerPageState extends State<ControllerPage> {
               painter: BoatPainter(
                 rudderAngle: rudderAngle,
                 sailAngle: sailAngle,
+                windAngle: getRelativeWindDirection(), // Pass relative wind direction
+                heading: heading,
               ),
               child: Container(),
             ),
@@ -144,8 +172,13 @@ class _ControllerPageState extends State<ControllerPage> {
           ),
           Text('Sail: ${sailAngle.toInt()}°'),
           const SizedBox(height: 20),
+          Text('Wind: ${windAngle.toInt()}° | Heading: ${heading.toInt()}°'),
         ],
       ),
     );
+  }
+
+  void parseHeading() {
+
   }
 }
